@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自己紹介ウルフ</title>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    text-align: center;
+    background-color: #fdf5e6;
+  }
+  #settingsScreen, #instructionScreen, #roleScreen {
+    display: none;
+  }
+  #settingsScreen {
+    display: block;
+  }
+  #instructionText {
+    font-size: 1.8em;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  #roleText {
+    font-size: 2.5em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  button {
+    font-size: 1.2em;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+</style>
+</head>
+<body>
+
+<!-- 設定画面 -->
+<div id="settingsScreen">
+  <h1>自己紹介ウルフ</h1>
+  <h3>ウルフと村人の人数を設定してください</h3>
+  <label for="wolfCount">ウルフ:</label>
+  <input type="number" id="wolfCount" min="1" value="1">
+  <label for="villagerCount">村人:</label>
+  <input type="number" id="villagerCount" min="1" value="4">
+  <button id="confirmSettingsButton">設定を確定して開始</button>
+</div>
+
+<!-- 案内画面 -->
+<div id="instructionScreen">
+  <p id="instructionText">お題を表示します。他のプレイヤーに見られないように表示してください。</p>
+  <button id="showRoleButton">表示</button>
+</div>
+
+<!-- 役割表示画面 -->
+<div id="roleScreen">
+  <p id="roleText"></p>
+  <button id="nextPlayerButton">次のプレイヤーへ</button>
+</div>
+
+<script>
+let wolfCount = 0; // ウルフの人数
+let villagerCount = 0; // 村人の人数
+let characterPool = [];
+
+// 設定を確定してゲームを初期化
+document.getElementById("confirmSettingsButton").addEventListener("click", () => {
+  wolfCount = parseInt(document.getElementById("wolfCount").value, 10);
+  villagerCount = parseInt(document.getElementById("villagerCount").value, 10);
+
+  if (wolfCount + villagerCount < 1) {
+    alert("ウルフと村人の合計人数を1以上にしてください。");
+    return;
+  }
+
+  // キャラクターリストを作成してシャッフル
+  characterPool = Array(wolfCount).fill("ウルフ").concat(Array(villagerCount).fill("村人"));
+  shuffleArray(characterPool);
+
+  // 設定画面を非表示にして案内画面を表示
+  document.getElementById("settingsScreen").style.display = "none";
+  showInstructionScreen();
+});
+
+// 案内画面を表示
+function showInstructionScreen() {
+  document.getElementById("instructionScreen").style.display = "block";
+  document.getElementById("roleScreen").style.display = "none";
+}
+
+// 役割を表示
+function showRoleScreen() {
+  if (characterPool.length === 0) {
+    alert("すべての役職を表示しました。ゲーム終了です。");
+    return;
+  }
+
+  const role = characterPool.pop();
+  document.getElementById("roleText").textContent = role;
+  document.getElementById("instructionScreen").style.display = "none";
+  document.getElementById("roleScreen").style.display = "block";
+}
+
+// 次のプレイヤーに移行
+function nextPlayer() {
+  if (characterPool.length === 0) {
+    alert("すべての役職を表示しました。ゲーム終了です。");
+    return;
+  }
+  showInstructionScreen();
+}
+
+// 配列をシャッフル
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+// ボタンのイベントリスナー
+document.getElementById("showRoleButton").addEventListener("click", showRoleScreen);
+document.getElementById("nextPlayerButton").addEventListener("click", nextPlayer);
+</script>
+</body>
+</html>
